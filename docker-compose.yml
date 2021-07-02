@@ -1,0 +1,42 @@
+version: "3"
+services:
+  nginx_proxy_backend:
+    image: nginx:latest
+    container_name: nginx_proxy_backend
+    links:
+      - "elastic_1:dbelastic"
+      - "mongo_1:dbmongo"
+    networks:
+      - backend
+  elastic_1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    container_name: elastic_1
+    networks:
+      - backend
+    environment:
+      - node.name=elastic_hihi-node
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9221:9200"
+    volumes:
+      - "./data/elastic1_volume:/usr/share/elasticsearch/data"
+  mongo_1:
+    image: mongo:4.2
+    container_name: mongo_1
+    networks:
+      - backend
+    environment:
+      - MONGO_INITDB_DATABASE=bar
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123
+    ports:
+      - "27021:27017"
+    volumes:
+      - "./data/mongo1_volume:/data/db"
+      - ./mongo-docker-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+networks:
+  backend:
+    driver: bridge
