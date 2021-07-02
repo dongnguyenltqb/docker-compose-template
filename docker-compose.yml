@@ -48,6 +48,20 @@ services:
     volumes:
       - "./data/mongo1_volume:/data/db"
       - ./mongo-docker-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  postgres_1:
+    image: postgres:13
+    container_name: postgres_1
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5421:5432"
+    volumes:
+      - "./data/postgres1_volume:/var/lib/postgresql/data/pgdata"
+      - ./postgres-init.sh:/docker-entrypoint-initdb.d/init-user-db.sh
 networks:
   backend:
     driver: bridge
