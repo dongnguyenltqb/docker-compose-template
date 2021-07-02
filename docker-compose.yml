@@ -23,6 +23,17 @@ services:
       - "9221:9200"
     volumes:
       - "./data/elastic1_volume:/usr/share/elasticsearch/data"
+  kibana_1:
+    image: docker.elastic.co/kibana/kibana:7.11.1
+    networks:
+      - backend
+    links:
+      - "elastic_1:dbelastic"
+    ports:
+      - "5621:5601"
+    environment:
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_HOSTS: http://dbelastic:9200
   mongo_1:
     image: mongo:4.2
     container_name: mongo_1
